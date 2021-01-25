@@ -4,7 +4,7 @@ import serial
 import datetime
 import time
 import signal
-import matplotlib.pyplot as plt
+import util
 
 datetimeformat = "%Y-%m-%d_%H:%M:%S"
 
@@ -36,6 +36,14 @@ if __name__ == "__main__":
     drink = []
     meal = []
     count = []
+    max_meal = 0
+    min_meal = 0
+    max_drink = 0
+    min_drink = 0
+    start_meal = []
+    end_meal = []
+    start_drink = []
+    end_drink = []
 
     with open(DATE + ".txt", "w")as file:
 
@@ -56,6 +64,10 @@ if __name__ == "__main__":
             print(x)
             x = x.split("\t")
             if len(x) > 4:
+                if max_meal == 0 and len(meal) > 0and meal[-1] > 20:
+                    max_meal = float(x[4])
+                if max_drink == 0 and len(drink) > 0 and drink[-1] > 20:
+                    max_drink = float(x[1])
                 drink.append(float(x[1]))
                 meal.append(float(x[4]))
                 if len(count) == 0:
@@ -65,13 +77,14 @@ if __name__ == "__main__":
 
     if not working:
         print("Plotting data")
-        plt.figure(figsize=(20,10))
-        plt.plot(count, drink, linewidth=0.50, label='verre')
-        plt.plot(count, meal, linewidth=0.50, label='assiete')
-        plt.xlabel('time')
-        plt.ylabel('poid')
-        plt.title(texte)
-        plt.legend()
-        plt.savefig(DATE + '.png')
+        min_meal = meal[-1]
+        min_drink = drink[-1]
+        for e in meal:
+            start_meal.append(max_meal)
+            end_meal.append(min_meal)
+            start_drink.append(max_drink)
+            end_drink.append(min_drink)
+
+        util.make_plot(count, [drink, meal, start_meal, end_meal, start_drink, end_drink], ["verre", "assiette", "debut_repas", "fin_repas", "debut verre", "fin verre"], texte, DATE+".png")
 
 
